@@ -1,8 +1,7 @@
-var phaseEnum; // for changing phases of voting
+var phaseEnum = 0; // for changing phases of voting
 App = {
   web3Provider: null,
   contracts: {},
-  account: 0x0,
 
   init: async function () {
     // Load pets.
@@ -11,26 +10,36 @@ App = {
   },
 
   initWeb3: async function () {
-    if (window.ethereum) {
-      try {
-        const accounts = await window.ethereum.request({
-          method: "eth_requestAccounts",
-        });
-        setAccounts(accounts);
-      } catch (error) {
-        if (error.code === 4001) {
-          // User rejected request
-        }
-      }
-    }
+    // if (window.ethereum) {
+    //   App.web3Provider = window.ethereum;
+    //   try {
+    //     // const accounts = await window.ethereum.request({
+    //     //   method: "eth_requestAccounts",
+    //     // });
+    //     const accounts = await window.ethereum.enable();
+    //     console.log(accounts + " HELLO");
+    //     setAccounts(accounts);
+    //   } catch (error) {
+    //     if (error.code === 4001) {
+    //       // User rejected request
+    //     }
+    //   }
+    // }
+
+    App.web3Provider = new Web3.providers.HttpProvider("http://localhost:7545");
+
+    web3 = new Web3(App.web3Provider);
+
+    // console.log(web3);
 
     return App.initContract();
   },
 
   initContract: function () {
     $.getJSON("Contest.json", function (contest) {
+      // console.log(contest);
       App.contracts.Contest = TruffleContract(contest);
-
+      console.log(web3.currentProvider);
       App.contracts.Contest.setProvider(web3.currentProvider);
 
       return App.render();
@@ -45,8 +54,15 @@ App = {
     content.hide();
     $("#after").hide();
 
+    // console.log(web3.eth);
+
     web3.eth.getCoinbase(function (err, account) {
-      if (err === null) {
+      // console.log(err);
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(account);
+        web3.eth.defaultAccount = account;
         App.account = account;
         $("#accountAddress").html("Your account: " + account);
       }
@@ -169,14 +185,17 @@ App = {
         return instance.state();
       })
       .then(function (state) {
+        // console.log(state);
         var fetchedState;
         var fetchedStateAdmin;
-        phaseEnum = state.toString();
-        if (state == 0) {
+        // phaseEnum = state.toString();
+        // console.log(phaseEnum);
+        phaseEnum = 2;
+        if (phaseEnum == 0) {
           fetchedState =
             "Registration phase is on , go register yourself to vote !!";
           fetchedStateAdmin = "Registration";
-        } else if (state == 1) {
+        } else if (phaseEnum == 1) {
           fetchedState = "Voting is now live !!!";
           fetchedStateAdmin = "Voting";
         } else {
@@ -213,9 +232,10 @@ App = {
                 var id = contestant[0];
                 var name = contestant[1];
                 var voteCount = contestant[2];
-                var fetchedParty = contestant[3];
-                var fetchedAge = contestant[4];
-                var fetchedQualification = contestant[5];
+                var fetchedYear = contestant[3];
+                var fetchedBranch = contestant[4];
+                var fetchedSection = contestant[5];
+                var fetchedRollNo = contestant[6];
 
                 var resultTemplate =
                   "<tr><th>" +
@@ -223,14 +243,15 @@ App = {
                   "</th><td>" +
                   name +
                   "</td><td>" +
-                  fetchedAge +
+                  fetchedBranch +
                   "</td><td>" +
-                  fetchedParty +
+                  fetchedYear +
                   "</td><td>" +
-                  fetchedQualification +
+                  fetchedSection +
                   "</td><td>" +
-                  voteCount +
+                  fetchedRollNo +
                   "</td></tr>";
+                voteCount + "</td></tr>";
                 result.append(resultTemplate);
               });
             }
@@ -261,27 +282,44 @@ App = {
   },
 
   // ------------- adding candidate code -------------
-  addCandidate: function () {
-    $("#loader").hide();
-    var name = $("#name").val();
-    var age = $("#age").val();
-    var party = $("#party").val();
-    var qualification = $("#qualification").val();
+  addCandidate: async function () {
+    try {
+      $("#loader").hide();
+      var name = $("#name").val();
+      var year = $("#year").val();
+      var branch = $("#branch").val();
+      var section = $("#section").val();
+      var rollno = $("#rollno").val();
+      // console.log(App.contracts.Contest);
 
-    App.contracts.Contest.deployed()
-      .then(function (instance) {
-        return instance.addContestant(name, party, age, qualification);
-      })
-      .then(function (result) {
-        $("#loader").show();
-        $("#name").val("");
-        $("#age").val("");
-        $("#party").val("");
-        $("#qualification").val("");
-      })
-      .catch(function (err) {
-        console.error(err);
-      });
+      App.contracts.Contest.deployed()
+        .then(async function (instance) {
+          // console.log(instance);
+          const contestants = await instance.addContestant(
+            name,
+            branch,
+            year,
+            section,
+            rollno
+          );
+          console.log(contestants);
+          // return contestants;
+        })
+        .then(function (result) {
+          console.log(result);
+          $("#loader").show();
+          $("#name").val("");
+          $("#year").val("");
+          $("#branch").val("");
+          $("#section").val("");
+          $("#rollno").val("");
+        })
+        .catch(function (err) {
+          console.error(err);
+        });
+    } catch (err) {
+      console.error(err);
+    }
   },
 
   // ------------- changing phase code -------------

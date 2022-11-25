@@ -7,9 +7,10 @@ contract Contest{
 		uint id;
 		string name;
 		uint voteCount;
-		string party;
-		uint age;
-		string qualification;
+		string branch; 
+		string year;
+		string section; 
+		string rollno;
 	}
 
 	struct Voter{
@@ -49,9 +50,9 @@ contract Contest{
         state = x;
     }
 
-	function addContestant(string memory _name , string memory _party , uint _age , string memory _qualification) public onlyAdmin validState(PHASE.reg){
+	function addContestant(string memory _name, string memory _branch, string memory _year, string memory _section, string memory _rollno) public onlyAdmin validState(PHASE.reg){
 		contestantsCount++;
-		contestants[contestantsCount]=Contestant(contestantsCount,_name,0,_party,_age,_qualification);
+		contestants[contestantsCount]= Contestant(contestantsCount,_name,0,_branch,_year,_section,_rollno);
 	}
 
 	function voterRegisteration(address user) public onlyAdmin validState(PHASE.reg){
