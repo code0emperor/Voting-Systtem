@@ -190,7 +190,7 @@ App = {
         var fetchedStateAdmin;
         // phaseEnum = state.toString();
         // console.log(phaseEnum);
-        phaseEnum = 2;
+        phaseEnum = 0;
         if (phaseEnum == 0) {
           fetchedState =
             "Registration phase is on , go register yourself to vote !!";
