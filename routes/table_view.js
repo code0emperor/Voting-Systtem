@@ -1,24 +1,40 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
-var db=require('../database');
+var db = require("../database");
 
 // another routes also appear here
 // this script to fetch data from MySQL databse table
-router.get('/table_view', function(req, res, next) {
-    var sql='SELECT * FROM registered_users';
-    db.query(sql, (err, data, fields) =>{
-    if (err) 
-    {
-        console.log(err)
-        throw err;
+router.get("/table_view", function (req, res, next) {
+  var sql = "SELECT * FROM registered_users";
+  db.query(sql, (err, data, fields) => {
+    if (err) {
+      console.log(err);
+      throw err;
     }
-    
-    
-    
+
     //console.log(typeof(myarray))
     // console.log(data)
-    res.render('adminVoterReg', { title: 'Registered Users List', userData: data});
+    res.render("adminVoterReg", {
+      title: "Registered Users List",
+      userData: data,
+    });
+  });
+});
 
+router.get("/candidateDetails", (req, res, next) => {
+  var sql = "SELECT * FROM candidate";
+  db.query(sql, (err, data, fields) => {
+    if (err) {
+      console.log(err);
+      throw err;
+    }
+
+    //console.log(typeof(myarray))
+    // console.log(data)
+    res.render("adminCandidateDetails.ejs", {
+      title: "Candidates List",
+      userData: data,
+    });
   });
 });
 module.exports = router;

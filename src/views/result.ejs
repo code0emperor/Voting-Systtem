@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
 
     <!-- The above 3 meta tags must come first in the head; any other head content must come after these tags -->
-    <title>Voter registration</title>
+    <title>Results</title>
 
     <meta
       content="width=device-width, initial-scale=1.0, shrink-to-fit=no"
@@ -34,7 +34,7 @@
     <div class="wrapper">
       <div
         class="sidebar"
-        data-color="green"
+        data-color="azure"
         data-background-color="white"
         data-image="./assets/img/sidebar-1.jpg"
       >
@@ -46,27 +46,27 @@
         <div class="sidebar-wrapper">
           <ul class="nav" style="margin-top: 50px">
             <li class="nav-item">
-              <a class="nav-link" href="/candidateDetails">
-                <i class="material-icons">info</i>
-                <p>Candidate Details</p>
+              <a class="nav-link" href="/userInfo">
+                <i class="material-icons">content_paste</i>
+                <p>Information</p>
               </a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/addCandidate">
-                <i class="material-icons">person_add</i>
-                <p>Add Candidate</p>
+              <a class="nav-link" href="/form">
+                <i class="material-icons">check_box</i>
+                <p>Voter Registeration</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/dashboard">
+                <i class="material-icons">how_to_vote</i>
+                <p>Voting-Area</p>
               </a>
             </li>
             <li class="nav-item active">
               <a class="nav-link" href="#">
-                <i class="material-icons">how_to_reg</i>
-                <p>Register</p>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="/changePhase">
-                <i class="material-icons">published_with_changes</i>
-                <p>Change Phase</p>
+                <i class="material-icons">assessment</i>
+                <p>Result</p>
               </a>
             </li>
             <li class="nav-item">
@@ -102,36 +102,48 @@
             </button>
           </div>
         </nav>
-
         <div class="content">
           <div class="container-fluid">
             <div class="row">
               <div class="col-md-12">
                 <div class="card">
-                  <div class="card-header card-header-success">
-                    <h4 class="card-title">Voter Registration</h4>
+                  <div class="card-header card-header-info">
+                    <h4 class="card-title">Results</h4>
                   </div>
                   <div class="card-body">
-                    <div>
+                    <div id="not">
+                      <% if(phase != 2){ %>
+                      <h1>Election is Not Over Yet!!!!!</h1>
+                      <% } else { %>
+                      <h1>Election is over!! Here are the results!!</h1>
+                      <% } %>
+                    </div>
+                    <div id="renderTable">
+                      <p id="accountAddress" class="text-center"></p>
+                      <hr />
                       <table class="table">
                         <tr>
-                          <th>S.N</th>
-                          <th>Account address</th>
-                          <th>Is registered</th>
+                          <th scope="col">#</th>
+                          <th scope="col">Name</th>
+                          <th scope="col">rollno</th>
+                          <th scope="col">Year</th>
+                          <th scope="col">Branch</th>
+                          <th scope="col">Section</th>
+                          <th scope="col">Votes</th>
                         </tr>
 
-                        <% if(userData.length!=0){ var i=0;
+                        <% if(phase == 2) { if(userData.length!=0){ var i=0;
                         userData.forEach(function(data){ console.log(data) %>
                         <tr>
-                          <td><%=i; %></td>
-                          <td><%=data.Account_address%></td>
-                          <td><%=data.Is_registered%></td>
+                          <td><%=i+1; %></td>
+                          <td><%=data.name%></td>
+                          <td><%=data.rollno%></td>
+                          <td><%=data.year%></td>
+                          <td><%=data.branch%></td>
+                          <td><%=data.section%></td>
+                          <td><%=data.votes%></td>
                         </tr>
-                        <% i++; }) %> <% } else{ %>
-                        <tr>
-                          <td colspan="7">No Data Found</td>
-                        </tr>
-                        <% } %>
+                        <% i++; }) %> <% } } %>
                       </table>
                     </div>
                   </div>
@@ -140,6 +152,7 @@
             </div>
           </div>
         </div>
+
         <!-- End Navbar -->
       </div>
     </div>

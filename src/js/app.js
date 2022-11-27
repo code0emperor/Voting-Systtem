@@ -1,3 +1,5 @@
+// var db = require("../../database");
+
 var phaseEnum = 0; // for changing phases of voting
 App = {
   web3Provider: null,
@@ -40,7 +42,7 @@ App = {
       // console.log(contest);
       App.contracts.Contest = TruffleContract(contest);
       console.log(web3.currentProvider);
-      App.contracts.Contest.setProvider(web3.currentProvider);
+      App.contracts.Contest.setProvider(App.web3Provider);
 
       return App.render();
     });
@@ -67,11 +69,13 @@ App = {
         $("#accountAddress").html("Your account: " + account);
       }
     });
-
+  },
+  voting: function () {
     // ------------- fetching candidates to front end from blockchain code-------------
     App.contracts.Contest.deployed()
       .then(function (instance) {
         contestInstance = instance;
+        // console.log(instance);
         return contestInstance.contestantsCount();
       })
       .then(function (contestantsCount) {
@@ -98,6 +102,7 @@ App = {
 
         var contestantsResults = $("#test");
         contestantsResults.empty();
+        console.log(contestantsResults);
         var contestantsResultsAdmin = $("#contestantsResultsAdmin");
         contestantsResultsAdmin.empty();
 
@@ -190,7 +195,18 @@ App = {
         var fetchedStateAdmin;
         // phaseEnum = state.toString();
         // console.log(phaseEnum);
-        phaseEnum = 0;
+        // var sql = "SELECT cur_phase FROM phase";
+        // console.log(sql);
+        // db.query(sql, (err, data, fields) => {
+        //   if (err) {
+        //     console.log(err);
+        //     throw err;
+        //   }
+        //   phaseEnum = data[0].cur_phase;
+        // });
+        // console.log(phaseEnum);
+
+        phaseEnum = 1;
         if (phaseEnum == 0) {
           fetchedState =
             "Registration phase is on , go register yourself to vote !!";
@@ -266,8 +282,9 @@ App = {
   },
 
   // ------------- voting code -------------
-  castVote: function (id) {
-    var contestantId = id;
+  castVote: function (rollno) {
+    var contestant = rollno;
+    console.log(contestant);
     App.contracts.Contest.deployed()
       .then(function (instance) {
         return instance.vote(contestantId, { from: App.account });
